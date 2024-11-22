@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <span id="btn">发送请求</span>
+  
+</body>
+<script>
+  btn.addEventListener("click", (event) => {
+    api()
+  })
+  var controller
+  const api = async() => {
+    if(controller) controller.abort()
+    controller = new AbortController();
+    const { signal } = controller;
+    const result = await fetch('http://localhost:3000/', {
+      signal
+    })
+  }
+
+
+</script>
+</html>
