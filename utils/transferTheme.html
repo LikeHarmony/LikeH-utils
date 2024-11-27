@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    :root {
+      --bg-color: #fff;
+      --color: #000;
+      background-color: var(--bg-color);
+      color: var(--color);
+    }
+    :root.dark {
+      --bg-color: #000;
+      --color: #FFF;
+    }
+    ::view-transition-new(root),
+    ::view-transition-old(root) {
+      /* 关闭默认动画 */
+      animation: none;
+    }
+  </style>
+</head>
+<body>
+  <button id="Theme0">切换主题</button>
+  <button id="Theme1">切换主题（水波纹</button>
+  <button id="Theme2" style="float: right">切换主题（水波纹）右边</button>
+  <h1 id="text">白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白</h1>
+</body>
+<script>
+  let isDark = false
+  function transferTheme(e) {
+    // mdn: 这是一项实验性技术,在将其用于生产之前请仔细检查浏览器兼容性表格
+    // 浏览器不支持 View Transitions 时的回退方案：
+    if (!document.startViewTransition) {
+      document.documentElement.classList.toggle('dark')
+      return;
+    }
+    // 定义transition开始截图，随后调用回调函数
+    const transition = document.startViewTransition(() => {
+      // 切换主题,ViewTransition 接口的 ready 只读属性是一个 Promise。会在伪元素树被创建且过渡动画即将开始时兑现。
+      document.documentElement.classList.toggle('dark')
+    })
+    
+    // 通过transition的ready接收promise
+    transition.ready.then(() => {
+      text.textContent= isDark ? "黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑" : "白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白"
+      // 获取鼠标的坐标
+      const { clientX, clientY } = e;
+      // 计算最大半径
+      const radius = Math.hypot(
+        Math.max(clientX, innerWidth - clientX),
+        Math.max(clientY, innerHeight - clientY),
+      )
+      
+      // 圆形动画扩展开始
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0% at ${clientX}px ${clientY}px)`,
+            `circle(${radius}px at ${clientX}px ${clientY}px)`,
+          ]
+        },
+        {
+          duration: 1000,
+          pseudoElement: '::view-transition-new(root)'
+        }
+      )
+    })
+  }
+  Theme0.addEventListener("click", (e) => {
+    isDark = !isDark
+    text.textContent= isDark ? "黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑黑" : "白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白白"
+    document.documentElement.classList.toggle('dark')
+  })
+  Theme1.addEventListener("click", (e) => {
+    isDark = !isDark
+    transferTheme(e)
+  })
+  Theme2.addEventListener("click", (e) => {
+    isDark = !isDark
+    transferTheme(e)
+  })
+</script>
+</html>
